@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: orignx-app
+    container_name: orignx_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=https://orignx.dev
+    depends_on:
+      - db
+    networks:
+      - orignx-network
+
+  db:
+    image: postgres:16
+    container_name: orignx_db
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - orignx-network
+
+  # Use Google cloud with ubuntu primarily OS to install nginx and certbot
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: orignx_nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #     - ./public:/var/www/orignx.dev/public
+  #   depends_on:
+  #     - app
+  #   networks:
+  #     - orignx-network
+
+networks:
+  orignx-network:
+    driver: bridge
+
+volumes:
+  pgdata:
