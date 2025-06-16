@@ -6,98 +6,126 @@
 
 A high-performance portfolio and blog system for a system architect, featuring:
 
-- Project showcase with ETL/POS/Logistics examples
-- Technical blog with MDX support
-- Admin dashboard with analytics
-- Secure authentication (Google + Credentials)
-- Production-ready deployment on Google Cloud
+- Project showcase with ETL/POS/Logistics examples  
+- Technical blog with MDX support  
+- Admin dashboard with analytics  
+- Secure authentication (Google + Credentials)  
+- Production-ready deployment on Google Cloud  
 
-## 🚀 Features
+---
 
-### Core Functionality
+## 🧠 Project Overview
 
-- Next.js 15 App Router with RSC
-- PostgreSQL with Prisma ORM
-- NextAuth.js with JWT sessions
-- Role-based access control (RBAC)
-- Markdown/MDX blog system
-- Responsive dark/light theme
-- Auth (Google & Credentials via NextAuth.js)
-- Production deploy: Docker, Nginx, Google Cloud
+> A modern portfolio & project site for a system architect and full-stack developer — designed to scale, impress, and handle real production use.
 
-### Infrastructure
+---
 
-- Dockerized deployment (Node.js 22 + PostgreSQL)
-- Nginx reverse proxy with TLS 1.3
-- Google Cloud Engine (Ubuntu 24.04 LTS)
-- Automated SSL with Certbot
-- CI/CD with GitHub Actions
+## ✅ Features Summary
+
+### 🔹 Public Pages
+
+- `/` – Landing Page พร้อม Hero, CTA, Feature Cards  
+- `/about` – แนะนำตัวจากประสบการณ์จริง  
+- `/projects` – Showcase โปรเจกต์ (ETL, POS, Logistics ฯลฯ)  
+- `/contact` – ช่องทางติดต่อ + ปุ่มอีเมล  
+- `/blog` – Blog สำหรับผู้ใช้งานทั่วไป  
+
+### 🔐 Protected Pages (Auth + Role-based)
+
+- `/dashboard` – ต้อง Login (USER, EDITOR, ADMIN)  
+- `/dashboard/admin` – เฉพาะ ADMIN  
+- `/blog/edit` – สำหรับ EDITOR, ADMIN  
+- `/blog/admin` – เฉพาะ ADMIN  
+
+### 🔐 Auth System
+
+- ✅ Login ผ่าน Email/Password และ Google OAuth  
+- ✅ Role-based Access Control (`USER`, `EDITOR`, `ADMIN`)  
+- ✅ Middleware ป้องกัน route + Redirect  
+- ✅ Session management with JWT  
+- ✅ `/unauthorized` page สำหรับผู้ที่ไม่มีสิทธิ์  
+
+---
+
+## 🧩 Global Components & UX/UI
+
+| Component         | Feature                                           |
+|------------------|---------------------------------------------------|
+| ✅ Navbar         | Responsive + Role-aware Links                     |
+| ✅ Theme          | Light/Dark toggle (next-themes)                   |
+| ✅ Hero Section   | Framer Motion Animated                            |
+| ✅ Card Layout    | Tailwind + shadcn/ui                              |
+| ✅ CTA Buttons    | Modern design                                     |
+| ✅ Avatar/Profile | Sign in/out + Role dropdown (พร้อมเพิ่ม menu)     |
+
+---
 
 ## 🛠️ Tech Stack
 
-| Component          | Technology                          |
-|--------------------|-------------------------------------|
-| Frontend           | Next.js 15, Tailwind CSS, shadcn/ui |
-| Backend            | Next.js API Routes                  |
-| Database           | PostgreSQL 16                       |
-| ORM                | Prisma                              |
-| Authentication     | NextAuth.js (Google + Credentials)  |
-| Deployment         | Docker, Nginx, Google Cloud         |
-| Monitoring         | Prometheus + Grafana                |
+| Layer       | Tool/Library                          | Purpose                              |
+|-------------|----------------------------------------|--------------------------------------|
+| Frontend    | Next.js 15 App Router                  | File-based routing + SSR             |
+| Styling     | TailwindCSS + shadcn/ui                | UI Component + Utility styling       |
+| Auth        | next-auth + JWT                        | Google/Auth login & Role control     |
+| ORM         | Prisma                                 | Type-safe DB Access                  |
+| DB          | PostgreSQL 16                          | Structured relational storage        |
+| Icons       | Lucide-react                           | Icon Set                             |
+| Animation   | Framer Motion                          | Section transitions                  |
+| Themes      | next-themes                            | Dark/Light/System toggle             |
+| Middleware  | next-auth/jwt                          | Route-level protection               |
+
+---
 
 ## 📂 Project Structure
 
+```
 orignx.dev/
 ├── app/
-│ ├── about/ # About page
-│ ├── projects/ # Projects page
-│ ├── contact/ # Contact page
-│ ├── dashboard/ # Admin panel (RBAC)
-│ └── blog/ # MDX blog
+│   ├── about/         # About page
+│   ├── projects/      # Project showcase
+│   ├── contact/       # Contact form
+│   ├── dashboard/     # Protected dashboard
+│   └── blog/          # Public blog
 ├── prisma/
-│ └── schema.prisma # DB schema
-├── components/ # UI components
-├── lib/ # Utils (auth, db, helpers)
-├── docker/
-│ ├── nginx.conf
-│ └── postgres/
-├── middleware.ts # Auth + role protection
-├── .env.example # Env config
-└── deploy.sh # Deployment automation
+│   └── schema.prisma  # Database schema
+├── components/        # UI components
+├── lib/               # Helpers (auth, db, session)
+├── middleware.ts      # Auth + Role control
+├── .env.example       # Environment variables
+└── deploy.sh          # CI/CD script
+```
+
+---
 
 ## 🚀 Deployment Guide
 
 ### 1. Prerequisites
 
-- Google Cloud account
-- Ubuntu 24.04 VM
-- Domain name (orignx.dev) with DNS configured
-- Docker and Docker Compose installed
+- Google Cloud VM (Ubuntu 24.04)
+- Docker + Docker Compose
+- DNS for `orignx.dev`
 
-### 2. Production Setup
+### 2. Setup
 
 ```bash
-# Clone repository
 git clone https://github.com/yourusername/orignx.dev.git
 cd orignx.dev
 
-# Set environment variables
 cp .env.example .env
-nano .env  # Fill in your values
+nano .env
 
-# Initialize SSL (run on host)
 sudo certbot --nginx -d orignx.dev -d www.orignx.dev
 
-# Start services
 docker-compose -f docker-compose.prod.yml up -d --build
 
-# Apply database migrations
 docker exec orignx_app npx prisma migrate deploy
 ```
 
+---
+
 ### 3. CI/CD Automation
 
-Create .github/workflows/deploy.yml:
+`.github/workflows/deploy.yml`
 
 ```yaml
 name: Deploy to Production
@@ -111,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -122,32 +150,38 @@ jobs:
           ssh deploy@orignx.dev "cd /var/www/orignx.dev && git pull && ./deploy.sh"
 ```
 
-🔒 Security Features
-Rate limiting via Nginx
+---
 
-CSP headers
+## 🔐 Security Features
 
-Database connection pooling
-
-Regular security updates with:
+- ✅ Role-based route guard via middleware  
+- ✅ JWT session token  
+- ✅ Rate limiting via Nginx  
+- ✅ Security headers (CSP, TLS 1.3)  
+- ✅ Automated SSL with Certbot  
+- ✅ Auto upgrade & image pull
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 docker-compose pull
 ```
 
-📄 Example: .env.example
+---
+
+## 📄 .env.example
 
 ```env
 DATABASE_URL="postgresql://postgres:password@db:5432/orignx"
-NEXTAUTH_SECRET="your-long-secret"
+NEXTAUTH_SECRET="your-secret"
 NEXTAUTH_URL="https://orignx.dev"
 
-GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_ID=your_google_id
 GOOGLE_CLIENT_SECRET=your_google_secret
 ```
 
-🎯 Example: prisma/schema.prisma
+---
+
+## 🔧 prisma/schema.prisma
 
 ```prisma
 generator client {
@@ -169,8 +203,10 @@ model User {
 
 enum Role {
   USER
+  EDITOR
   ADMIN
 }
+
 model Post {
   id        String   @id @default(cuid())
   title     String
@@ -179,49 +215,22 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
 }
+
 model Project {
-  id        String   @id @default(cuid())
-  title     String
+  id          String   @id @default(cuid())
+  title       String
   description String?
-  createdAt DateTime @default(now())
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
 }
 ```
 
-🛠️ Development
+---
 
-```bash
-# Install dependencies
-npm install
+## 📈 Monitoring
 
-# Start development server
-npm run dev
-
-# Generate Prisma client
-npx prisma generate
-
-# Run tests
-npm test
-```
-
-## 📖 SSL Certificate Setup with Certbot
-
-```bash
-# Install Certbot
-sudo apt update
-sudo apt install certbot python3-certbot-nginx
-
-# Obtain Certificate (Nginx plugin)
-sudo certbot --nginx -d orignx.dev -d www.orignx.dev
-
-# Set up auto-renewal
-sudo certbot renew --dry-run
-```
-
-## 📈 Monitoring Setup
-
-docker-compose.monitoring.yml
+`docker-compose.monitoring.yml`
 
 ```yaml
 services:
@@ -240,16 +249,19 @@ services:
       - prometheus
 ```
 
-## 📝 Implementation Checklist
+---
 
-- **Domain Verification**: Configure domain in Google Cloud DNS.
-- **SSL Certificates**: Set up SSL using Certbot.
-- **Reverse Proxy**: Use Nginx with TLS 1.3 for secure routing.
-- **Dockerized Environment**: Deploy Node.js 22 and Next.js 15 in Docker containers.
-- **Database Setup**: Configure PostgreSQL with persistent volumes.
-- **CI/CD Automation**: Implement GitHub Actions for automated deployment.
-- **Security Enhancements**: Add security headers and rate limiting via Nginx.
-- **Monitoring**: Set up Prometheus and Grafana for system monitoring.
+## 📝 Checklist
+
+- ✅ Domain + SSL setup via Certbot
+- ✅ Middleware auth + role guard
+- ✅ Login with Google/Credentials
+- ✅ Blog & Dashboard with RBAC
+- ✅ Responsive design with Dark/Light theme
+- ✅ CI/CD deploy script
+- ✅ Monitoring with Prometheus + Grafana
+
+---
 
 ## 📜 License
 

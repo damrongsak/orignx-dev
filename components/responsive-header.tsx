@@ -23,8 +23,8 @@ export default function ResponsiveHeader() {
         <header className="w-full border-b border-border py-4">
             <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
                 {/* Logo */}
-                <Link href="/" className="text-xl font-bold tracking-tight">
-                    orignx.dev
+                <Link href="/" className="text-4xl font-bold tracking-tight">
+                    ORIGNX.DEV
                 </Link>
 
                 {/* Desktop Menu */}
@@ -79,7 +79,7 @@ export default function ResponsiveHeader() {
                     {session?.user ? (
                         <div className="flex items-center gap-2">
                             <Image
-                                src={session.user.image || '/avatar.png'}
+                                src={session.user.image || '/assets/images/avatar.png'}
                                 alt={session.user.name || 'User'}
                                 width={32}
                                 height={32}
@@ -176,7 +176,7 @@ export default function ResponsiveHeader() {
                         {session?.user ? (
                             <div className="flex items-center gap-2">
                                 <Image
-                                    src={session.user.image || '/avatar.png'}
+                                    src={session.user.image || '/assets/images/avatar.png'}
                                     alt={session.user.name || 'User'}
                                     width={32}
                                     height={32}

@@ -29,6 +29,7 @@ model User {
 enum Role {
   USER
   ADMIN
+  EDITOR
 }
 
 model Account {

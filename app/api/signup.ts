@@ -1,16 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
-    }
-
-    const { email, password } = req.body;
+export async function POST(req: Request) {
+    const { email, password } = await req.json();
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
+        return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
     }
 
     try {
@@ -19,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         if (existingUser) {
-            return res.status(409).json({ message: 'User with this email already exists' });
+            return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,13 +23,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const newUser = await prisma.user.create({
             data: {
                 email,
-                password: hashedPassword,
+                hashedPassword,
             },
         });
 
-        res.status(201).json({ message: 'User created successfully', user: { id: newUser.id, email: newUser.email } });
+        return NextResponse.json(
+            { message: 'User created successfully', user: { id: newUser.id, email: newUser.email } },
+            { status: 201 }
+        );
     } catch (error) {
         console.error('Signup error:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
     }
 }

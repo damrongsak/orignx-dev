@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
 export default function Signup() {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -17,56 +20,65 @@ export default function Signup() {
         setMessage('');
 
         try {
+            console.log('Form data submitted:', formData);
+
             const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
             });
 
+            console.log('Response received:', response);
+
             const result = await response.json();
+            console.log('Parsed response JSON:', result);
+
             if (response.ok) {
-                setMessage(result.message);
+            setMessage(result.message);
             } else {
-                setMessage(result.error);
+            setMessage(result.error);
             }
-        } catch {
-            setMessage('An error occurred.');
+        } catch (error) {
+            console.log('Error occurred during signup:', error);
+            setMessage(`An error occurred! Please try again later.`);
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen py-2">
-            <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-            <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="px-4 py-2 border rounded"
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="px-4 py-2 border rounded"
-                    required
-                />
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Sign Up
-                </button>
-            </form>
-            {message && <p className="mt-4 text-center text-sm text-gray-600">{message}</p>}
-            <p className="mt-4 text-center text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link href="/auth/signin" className="text-blue-500 hover:underline">
-                    Log In
-                </Link>
-            </p>
-        </div>
+        <main className="max-w-4xl mx-auto px-4 py-20 space-y-8">
+            <Card className="w-full max-w-md p-6 shadow-lg mx-auto">
+                <h1 className="text-3xl font-bold mb-6 text-center">Create Your Account</h1>
+                <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
+                    <Input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="border-gray-700 focus:ring-blue-500"
+                        required
+                    />
+                    <Input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className="border-gray-700 focus:ring-blue-500"
+                        required
+                    />
+                    <Button type="submit" variant="default" className="w-full">
+                        Sign Up
+                    </Button>
+                </form>
+                {message && <p className="mt-4 text-center text-sm text-gray-400">{message}</p>}
+                <p className="mt-6 text-center text-sm text-gray-400">
+                    Already have an account?{' '}
+                    <Link href="/auth/signin" className="text-blue-400 hover:underline">
+                        Sign In
+                    </Link>
+                </p>
+            </Card>
+        </main>
     );
 }

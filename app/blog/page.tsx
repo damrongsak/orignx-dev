@@ -2,11 +2,15 @@ import { prisma } from "@/lib/db";
 import { BlogList } from "@/components/blog/BlogList";
 
 export default async function BlogPage() {
-    const posts = await prisma.post.findMany({
+    const posts = (await prisma.post.findMany({
         where: { published: true },
         orderBy: { createdAt: 'desc' },
         include: { author: true },
-    });
+    })).map(post => ({
+        ...post,
+        createdAt: post.createdAt.toISOString(),
+        author: post.author ? { name: post.author.name || "" } : undefined,
+    }));
 
     return (
         <div className="max-w-6xl mx-auto p-4">
