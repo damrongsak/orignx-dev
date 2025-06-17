@@ -14,24 +14,21 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - NEXTAUTH_URL=https://orignx.dev
-    depends_on:
-      - db
-    networks:
-      - orignx-network
+      - NEXTAUTH_URL=https://www.orignx.dev
+    # depends_on:
+    #   - postgresql
 
-  db:
-    image: postgres:16
-    container_name: orignx_db
-    restart: unless-stopped
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-    networks:
-      - orignx-network
+  # On production, we use already built image of postgresql
+  # postgresql:
+  #   image: postgres:16
+  #   container_name: orignx_db
+  #   restart: unless-stopped
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #     - POSTGRES_DB=${DB_NAME}
 
   # Use Google cloud with ubuntu primarily OS to install nginx and certbot
   # nginx:
@@ -50,9 +47,10 @@ services:
   #   networks:
   #     - orignx-network
 
-networks:
-  orignx-network:
-    driver: bridge
+# volumes:
+#   pgdata:
 
-volumes:
-  pgdata:
+networks:
+  default:
+    external: true
+    name: orignx-network

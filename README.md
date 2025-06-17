@@ -108,8 +108,8 @@ orignx.dev/
 ### 2. Setup
 
 ```bash
-git clone https://github.com/yourusername/orignx.dev.git
-cd orignx.dev
+git clone https://github.com/yourusername/orignx-dev.git
+cd orignx-dev
 
 cp .env.example .env
 nano .env
