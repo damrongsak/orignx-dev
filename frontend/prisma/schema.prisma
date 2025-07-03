@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  role           Role      @default(USER)
+  hashedPassword String?
+  accounts       Accounts[]
+  sessions       Sessions[]
+  posts          Posts[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+model Accounts {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+
+  @@map("accounts")
+}
+
+model Sessions {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Posts {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  author    Users?    @relation(fields: [authorId], references: [id])
+  authorId  String?
+
+  @@map("posts")
+}
+
+model Projects {
+  id          String     @id @default(uuid())
+  title       String
+  description String     @db.Text
+  imageUrl    String?    @map("image_url")
+  githubUrl   String?    @map("github_url")
+  liveUrl     String?    @map("live_url")
+  tags        String[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  
+  @@map("projects")
+}

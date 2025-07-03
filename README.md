@@ -80,19 +80,26 @@ A high-performance portfolio and blog system for a system architect, featuring:
 
 ```
 orignx.dev/
-├── app/
-│   ├── about/         # About page
-│   ├── projects/      # Project showcase
-│   ├── contact/       # Contact form
-│   ├── dashboard/     # Protected dashboard
-│   └── blog/          # Public blog
-├── prisma/
-│   └── schema.prisma  # Database schema
-├── components/        # UI components
-├── lib/               # Helpers (auth, db, session)
-├── middleware.ts      # Auth + Role control
-├── .env.example       # Environment variables
-└── deploy.sh          # CI/CD script
+├── frontend/
+│   ├── app/             # Next.js App Router pages
+│   ├── components/      # Shared React components
+│   ├── lib/             # Helper functions (auth, db)
+│   ├── prisma/          # Prisma schema and migrations
+│   ├── public/          # Static assets
+│   └── middleware.ts    # Authentication middleware
+├── backend/
+│   ├── app/             # Laravel application code
+│   ├── bootstrap/       # Laravel bootstrap scripts
+│   ├── config/          # Laravel configuration files
+│   ├── database/        # Database migrations and seeds
+│   ├── public/          # Laravel public directory
+│   ├── routes/          # API routes
+│   └── storage/         # File storage
+├── nginx/
+│   └── nginx.conf       # Nginx configuration
+├── deploy.sh
+├── docker-compose.prod.yml
+└── Dockerfile.prod
 ```
 
 ---
@@ -108,7 +115,7 @@ orignx.dev/
 ### 2. Setup
 
 ```bash
-git clone https://github.com/yourusername/orignx.dev.git
+git clone https://github.com/damrongsak/orignx-dev.git
 cd orignx.dev
 
 cp .env.example .env
@@ -119,35 +126,6 @@ sudo certbot --nginx -d orignx.dev -d www.orignx.dev
 docker-compose -f docker-compose.prod.yml up -d --build
 
 docker exec orignx_app npx prisma migrate deploy
-```
-
----
-
-### 3. CI/CD Automation
-
-`.github/workflows/deploy.yml`
-
-```yaml
-name: Deploy to Production
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy to Server
-        run: |
-          ssh deploy@orignx.dev "cd /var/www/orignx.dev && git pull && ./deploy.sh"
 ```
 
 ---
@@ -184,6 +162,12 @@ GOOGLE_CLIENT_SECRET=your_google_secret
 ## 🔧 prisma/schema.prisma
 
 ```prisma
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -194,36 +178,131 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  role           Role      @default(USER)
+  hashedPassword String?
+  accounts       Account[]
+  sessions       Session[]
+  Post           Post[]
 }
 
 enum Role {
   USER
-  EDITOR
   ADMIN
+  EDITOR
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Post {
   id        String   @id @default(cuid())
   title     String
-  content   String?
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  content   String
+  published Boolean  @default(true)
   createdAt DateTime @default(now())
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  String?
 }
 
 model Project {
-  id          String   @id @default(cuid())
+  id          String     @id @default(uuid())
   title       String
-  description String?
-  createdAt   DateTime @default(now())
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
+  description String     @db.Text
+  imageUrl    String?    @map("image_url")
+  githubUrl   String?    @map("github_url")
+  liveUrl     String?    @map("live_url")
+  tags        String[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  
+  @@map("projects")
 }
+```
+
+---
+
+## 🔧 Using Prisma
+
+All Prisma commands should be run from the `frontend` directory.
+
+### Generate Prisma Client
+
+To regenerate the Prisma Client after schema changes:
+
+```bash
+cd frontend
+npx prisma generate
+```
+
+### Database Migrations
+
+To create a new migration after changing the schema:
+
+```bash
+cd frontend
+npx prisma migrate dev --name <migration_name>
+```
+
+To apply migrations to the database:
+
+```bash
+cd frontend
+npx prisma migrate deploy
+```
+
+### Seed the Database
+
+To seed the database with initial data (from `prisma/seed.js`):
+
+```bash
+cd frontend
+npx prisma db seed
+```
+
+### Prisma Studio
+
+To open the Prisma Studio to view and edit data in the database:
+
+```bash
+cd frontend
+npx prisma studio
 ```
 
 ---
