@@ -78,6 +78,7 @@ model Posts {
   id        String   @id @default(cuid())
   title     String
   content   String
+  category  String?
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   author    Users?    @relation(fields: [authorId], references: [id])

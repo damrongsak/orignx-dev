@@ -13,7 +13,7 @@ async function main() {
       name: 'Admin',
       email: 'admin@orignx.dev',
       role: 'ADMIN',
-      password: hashedPassword,
+      hashedPassword: hashedPassword,
     },
   });
 
@@ -24,11 +24,13 @@ async function main() {
       {
         title: 'Welcome to My Blog',
         content: 'This is the first post on orignx.dev.',
+        category: 'General',
         authorId: user.id,
       },
       {
         title: 'Building My Portfolio',
         content: 'I used Next.js 15, Prisma, and PostgreSQL...',
+        category: 'Development',
         authorId: user.id,
       },
     ],

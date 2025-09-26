@@ -1,0 +1,6 @@
+DATABASE_URL="postgresql://lab:lab1234@localhost:5432/orignxdb"
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="https://orignx.dev"
+
+GOOGLE_CLIENT_ID=your_google_id
+GOOGLE_CLIENT_SECRET=your_google_secret

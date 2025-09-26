@@ -177,7 +177,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id             String    @id @default(cuid())
   name           String?
   email          String?   @unique
@@ -185,9 +185,11 @@ model User {
   image          String?
   role           Role      @default(USER)
   hashedPassword String?
-  accounts       Account[]
-  sessions       Session[]
-  Post           Post[]
+  accounts       Accounts[]
+  sessions       Sessions[]
+  posts          Posts[]
+
+  @@map("users")
 }
 
 enum Role {
@@ -196,7 +198,7 @@ enum Role {
   EDITOR
 }
 
-model Account {
+model Accounts {
   id                String  @id @default(cuid())
   userId            String
   type              String
@@ -210,18 +212,21 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
-model Session {
+model Sessions {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model VerificationToken {
@@ -232,17 +237,20 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Post {
+model Posts {
   id        String   @id @default(cuid())
   title     String
   content   String
+  category  String?
   published Boolean  @default(true)
   createdAt DateTime @default(now())
-  author    User?    @relation(fields: [authorId], references: [id])
+  author    Users?    @relation(fields: [authorId], references: [id])
   authorId  String?
+
+  @@map("posts")
 }
 
-model Project {
+model Projects {
   id          String     @id @default(uuid())
   title       String
   description String     @db.Text
@@ -280,20 +288,43 @@ cd frontend
 npx prisma migrate dev --name <migration_name>
 ```
 
-To apply migrations to the database:
+Example - the recent category field addition:
+
+```bash
+cd frontend
+npx prisma migrate dev --name add_category_to_posts
+```
+
+To apply migrations to production database:
 
 ```bash
 cd frontend
 npx prisma migrate deploy
 ```
 
-### Seed the Database
-
-To seed the database with initial data (from `prisma/seed.js`):
+To check migration status:
 
 ```bash
 cd frontend
-npx prisma db seed
+npx prisma migrate status
+```
+
+To reset the database (⚠️ **development only**):
+
+```bash
+cd frontend
+npx prisma migrate reset
+```
+
+### Seed the Database
+
+To seed the database with initial data (from `prisma/seed.ts`):
+
+```bash
+cd frontend
+npm run seed
+# or directly:
+npx ts-node --compiler-options='{"module":"commonjs"}' prisma/seed.ts
 ```
 
 ### Prisma Studio
@@ -304,6 +335,31 @@ To open the Prisma Studio to view and edit data in the database:
 cd frontend
 npx prisma studio
 ```
+
+### Database Schema Introspection
+
+To pull the current database schema into your Prisma schema:
+
+```bash
+cd frontend
+npx prisma db pull
+```
+
+### Database Push (for prototyping)
+
+To push schema changes directly to the database without migrations:
+
+```bash
+cd frontend
+npx prisma db push
+```
+
+### Recent Schema Updates
+
+- ✅ Added `category` field to `Posts` model (optional String field)
+- ✅ Updated model names to plural form (`Users`, `Posts`, `Projects`, etc.)
+- ✅ Added proper table mapping with `@@map()` directives
+- ✅ Enhanced seed data with category examples
 
 ---
 

@@ -8,12 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "ts-node --compiler-options='{\"module\":\"commonjs\"}' prisma/seed.ts",
     "postinstall": "prisma generate",
     "test": "jest --config jest.config.js --passWithNoTests"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node --compiler-options='{\"module\":\"commonjs\"}' prisma/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
