@@ -20,13 +20,11 @@ export default function Signup() {
     setMessage('');
 
     try {
-      console.log('Form data submitted:', formData);
-
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      console.log('Form data submitted:', formData);            const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+            });
 
       console.log('Response received:', response);
 

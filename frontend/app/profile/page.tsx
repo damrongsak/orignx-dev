@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 
 export default function ProfilePage() {
-  const [formData, setFormData] = useState({ name: '', email: '', bio: '' });
+  const [formData, setFormData] = useState({ name: '', email: '' });
   const [message, setMessage] = useState('');
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -64,14 +63,6 @@ export default function ProfilePage() {
             onChange={handleInputChange}
             className="border-gray-700 focus:ring-blue-500"
             required
-          />
-          <Textarea
-            name="bio"
-            placeholder="Bio"
-            value={formData.bio}
-            onChange={handleInputChange}
-            className="border-gray-700 focus:ring-blue-500"
-            rows={4}
           />
           <Button type="submit" variant="default" className="w-full">
             Update Profile

@@ -24,6 +24,7 @@ model Users {
   accounts       Accounts[]
   sessions       Sessions[]
   posts          Posts[]
+  apiTokens      ApiTokens[]
 
   @@map("users")
 }
@@ -96,6 +97,21 @@ model Projects {
   liveUrl     String?    @map("live_url")
   tags        String[]
   createdAt   DateTime   @default(now()) @map("created_at")
-  
+
   @@map("projects")
+}
+
+model ApiTokens {
+  id        String   @id @default(cuid())
+  name      String
+  token     String   @unique
+  userId    String
+  isActive  Boolean  @default(true)
+  expiresAt DateTime?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_tokens")
 }
