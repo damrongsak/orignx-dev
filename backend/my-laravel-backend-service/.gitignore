@@ -1,0 +1,46 @@
+# Laravel specific files
+/vendor/
+/node_modules/
+/storage/*.key
+.env
+.env.*.local
+
+# IDE specific files
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Composer files
+composer.lock
+
+# NPM/Yarn files
+package-lock.json
+yarn.lock
+
+# Log files
+*.log
+
+# Coverage reports
+coverage/
+*.cover
+
+# PHPUnit result cache
+.phpunit.result.cache
+
+# Laravel Mix files
+public/hot
+public/storage
+public/mix-manifest.json
+
+# Temporary files
+*.swp
+*.swpx
+*.tmp
+*.temp
+*.bak
+*.backup

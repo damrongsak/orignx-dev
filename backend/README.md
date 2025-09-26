@@ -311,6 +311,15 @@ The project is configured for deployment on GCP Compute Engine using the `docker
 Copy `backend/.env.example` to `backend/.env` and configure it for production (strong passwords, correct `APP_URL`, `APP_KEY`, `JWT_SECRET`, `WEBHOOK_API_KEY`).
 
 ### Run Production Stack
+To build a specific service, you would run:
+```bash
+docker-compose -f docker-compose.yml build <service_name>
+```
+For example, to build only the `php-fpm` service, you would run:
+```bash
+docker-compose -f docker-compose.yml build php-fpm
+```
+To build all services and run them in detached mode:
 ```bash
 docker-compose -f docker-compose.yml build
 docker-compose -f docker-compose.yml up -d

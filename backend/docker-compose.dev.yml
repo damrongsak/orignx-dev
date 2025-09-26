@@ -9,25 +9,25 @@ services:
       # No direct mounting of frontend/build here, Next.js service handles its own serving
     depends_on:
       - php-fpm
-      - nextjs
+      # - nextjs
     networks:
       - app-network
 
-  # Next.js service for local development with hot-reloading
-  nextjs:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile.nextjs
-    volumes:
-      - ../frontend:/app # Mount frontend source code for hot-reloading
-      - /app/node_modules # Anonymous volume for node_modules to prevent host interference
-    ports:
-      - "3000:3000" # Expose Next.js development port
-    environment:
-      NEXT_PUBLIC_API_BASE_URL: http://nginx/api/v1 # API URL for frontend to use
-    networks:
-      - app-network
-    command: npm run dev # Run Next.js in development mode
+  # # Next.js service for local development with hot-reloading
+  # nextjs:
+  #   build:
+  #     context: ../frontend
+  #     dockerfile: Dockerfile.nextjs
+  #   volumes:
+  #     - ../frontend:/app # Mount frontend source code for hot-reloading
+  #     - /app/node_modules # Anonymous volume for node_modules to prevent host interference
+  #   ports:
+  #     - "3000:3000" # Expose Next.js development port
+  #   environment:
+  #     NEXT_PUBLIC_API_BASE_URL: http://nginx/api/v1 # API URL for frontend to use
+  #   networks:
+  #     - app-network
+  #   command: npm run dev # Run Next.js in development mode
 
   # PHP-FPM service for local Laravel development
   php-fpm:
@@ -35,9 +35,11 @@ services:
       context: .
       dockerfile: Dockerfile.php
     volumes:
-      - ./app:/var/www/html # Mount Laravel application for live changes
+      - ./my-laravel-backend:/var/www/html # Mount Laravel application for live changes
     expose:
       - "9000"
+    ports:
+      - "9000:9000" # Expose PHP-FPM port for Nginx to connect
     environment:
       DB_CONNECTION: pgsql # Keep this to specify the driver
       DATABASE_URL: postgresql://lab:lab1234@postgres:5432/orignxdb # UPDATED: Use database URL
