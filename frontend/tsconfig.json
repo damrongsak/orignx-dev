@@ -16,6 +16,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"
@@ -23,11 +25,13 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/app/*": ["./app/*"],
+      "@/types/*": ["./types/*"]
     },
-    "target": "ES2017"
+    "target": "ES2022"
   },
   "include": [
     "next-env.d.ts",

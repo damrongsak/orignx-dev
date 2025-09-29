@@ -12,6 +12,7 @@ export default async function BlogPage() {
     ...posts,
     createdAt: posts.createdAt.toISOString(),
     author: posts.author ? { name: posts.author.name || '' } : undefined,
+    category: posts.category || undefined,
   }));
 
   return (

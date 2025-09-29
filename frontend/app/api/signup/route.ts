@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db';
 
 export async function POST(req: Request) {
-  const { email, nonHashedPassword } = await req.json();
+  const { email, password } = await req.json();
 
-  if (!email || !nonHashedPassword) {
+  if (!email || !password) {
     return NextResponse.json(
       { message: 'Email and password are required' },
       { status: 400 },
@@ -24,12 +24,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const password = await bcrypt.hash(nonHashedPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.users.create({
       data: {
         email,
-        hashedPassword: password,
+        hashedPassword: hashedPassword,
       },
     });
 

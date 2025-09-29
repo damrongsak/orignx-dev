@@ -1,12 +1,12 @@
 import nodemailer from 'nodemailer';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface ResetPasswordData {
   email: string;
 }
 
 // Function to send a reset password email
-export async function sendResetPasswordEmail(email: string): Promise<void> {
+async function sendResetPasswordEmail(email: string): Promise<void> {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail', // Replace with your email service
@@ -31,27 +31,22 @@ export async function sendResetPasswordEmail(email: string): Promise<void> {
   }
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  if (req.method === 'POST') {
-    const { email } = req.body as ResetPasswordData;
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json() as ResetPasswordData;
+    const { email } = body;
 
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    try {
-      await sendResetPasswordEmail(email);
-      return res.status(200).json({ message: 'Reset password email sent' });
-    } catch (error) {
-      console.error('Error in handler:', error);
-      return res
-        .status(500)
-        .json({ error: 'Failed to send reset password email' });
-    }
-  } else {
-    return res.status(405).json({ error: 'Method not allowed' });
+    await sendResetPasswordEmail(email);
+    return NextResponse.json({ message: 'Reset password email sent' }, { status: 200 });
+  } catch (error) {
+    console.error('Error in POST handler:', error);
+    return NextResponse.json(
+      { error: 'Failed to send reset password email' },
+      { status: 500 }
+    );
   }
 }
