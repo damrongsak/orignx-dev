@@ -49,6 +49,14 @@ export default function ResponsiveHeader() {
               Dashboard
             </Link>
           )}
+          {session?.user && (
+            <Link
+              href="/dashboard/api-keys"
+              className="hover:text-foreground transition"
+            >
+              API Keys
+            </Link>
+          )}
           {mounted && (
             <Button
               variant="ghost"
@@ -135,6 +143,14 @@ export default function ResponsiveHeader() {
               className="block text-sm hover:text-foreground transition"
             >
               Dashboard
+            </Link>
+          )}
+          {session?.user && (
+            <Link
+              href="/dashboard/api-keys"
+              className="block text-sm hover:text-foreground transition"
+            >
+              API Keys
             </Link>
           )}
           <div className="flex gap-2 pt-4 items-center">

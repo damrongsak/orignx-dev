@@ -74,7 +74,7 @@ function useToast() {
     );
   };
 
-  return { toasts, dismissToast };
+  return { toasts, dismissToast, toast };
 }
 
 const reducer = (state: State, action: Action): State => {
