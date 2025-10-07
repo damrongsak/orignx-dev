@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -9,6 +10,9 @@ export async function POST(request: NextRequest) {
       data: { title, content, category, published, authorId },
       select: { id: true, createdAt: true }
     });
+
+    // Revalidate the blog page cache when a new post is created
+    revalidatePath('/blog');
 
     return NextResponse.json(post);
   } catch (e) {

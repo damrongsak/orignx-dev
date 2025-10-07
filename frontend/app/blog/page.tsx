@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/db';
 import { BlogList } from '@/components/blog/BlogList';
 
+// Ensure the page revalidates to show new posts
+export const dynamic = 'force-dynamic';
+
 export default async function BlogPage() {
   const posts = (
     await prisma.posts.findMany({
